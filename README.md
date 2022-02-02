@@ -1,2 +1,4 @@
-# Weather_ReactNative
-Weather app demo with react native with all the best practices
+# Weather App with React Native
+ 
+For management of environment variables react-native-dotenv library is used.
+https://github.com/goatandsheep/react-native-dotenv

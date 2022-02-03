@@ -5,7 +5,7 @@ const SmallCard = props => (
   <TouchableOpacity
     style={{
       margin: 10,
-      height: 100,
+      height: 200,
       width: 100,
       backgroundColor: '#7986cb',
       alignItems: 'center',
@@ -13,7 +13,10 @@ const SmallCard = props => (
       borderRadius: 25,
     }}
     onPress={props.onPress}>
-    <Text style={{color: 'white', fontSize: 10}}>{props.text}</Text>
+    <Text style={{color: 'white', fontSize: 12}}>{props.cardHeading}</Text>
+    <Text style={{color: 'white', fontSize: 20, fontWeight: '900'}}>
+      {props.text}
+    </Text>
   </TouchableOpacity>
 );
 

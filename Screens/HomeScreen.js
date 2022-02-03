@@ -1,4 +1,4 @@
-import React,{useEffect,useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   StyleSheet,
   Text,
@@ -7,103 +7,135 @@ import {
   Alert,
   ScrollView,
   Button,
+  Image,
 } from 'react-native';
 import CircleButton from '../Components/CircleButton';
 import SmallCard from '../Components/SmallCard';
-import LargeCard from '../Components/LargeCard';
 import type {Node} from 'react';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import config from '../config.js';
-import axios from 'axios'
+import axios from 'axios';
+import {Icon} from 'react-native-elements/dist/icons/Icon';
+import {Searchbar} from 'react-native-paper';
 
-
-
-const fetchApiCall = () => {
-      axios({
-          "method": "GET",
-          "url": config.API_URL+"/current.json?key="+config.API_KEY+"&q=London&aqi=yes"
-        })
-          .then((response) => {
-           alert(response.data.location.name);
-          })
-          .catch((error) => {
-            console.log(error)
-          })
-  }
+const fetchApiCall = searchQuery => {
+  const [weather, setWeather] = useState('');
+  axios({
+    method: 'GET',
+    url:
+      config.API_URL +
+      '/current.json?key=' +
+      config.API_KEY +
+      '&q=' +
+      searchQuery +
+      '&aqi=yes',
+  })
+    .then(response => {
+      const details = {
+        conditiontext: response.data.current.condition.text,
+        name: response.data.location.name,
+        temp_c: response.data.current.temp_c,
+        localtime: response.data.location.localtime,
+        temp_f: response.data.current.temp_f,
+        wind_mph: response.data.current.wind_mph,
+        wind_kph: response.data.current.wind_kph,
+        pressure_mb: response.data.current.pressure_mb,
+        pressure_in: response.data.current.pressure_in,
+        precip_mm: response.data.current.precip_mm,
+        precip_in: response.data.current.precip_in,
+        humidity: response.data.current.humidity,
+      };
+      setWeather(details);
+    })
+    .catch(error => {
+      console.log(error);
+    });
+  return weather;
+};
 
 async function storeUserSession() {
-    try {
-        await EncryptedStorage.setItem(
-            "user_session",
-            JSON.stringify({
-                age : 29,
-                token : "ACCESS_TOKEN",
-                username : "emeraldsanto",
-                languages : ["fr", "en", "de"]
-            })
-        );
+  try {
+    await EncryptedStorage.setItem(
+      'user_session',
+      JSON.stringify({
+        age: 29,
+        token: 'ACCESS_TOKEN',
+        username: 'emeraldsanto',
+        languages: ['fr', 'en', 'de'],
+      }),
+    );
 
-        // Congrats! You've just stored your first value!
-    } catch (error) {
-        // There was an error on the native side
-    }
+    // Congrats! You've just stored your first value!
+  } catch (error) {
+    // There was an error on the native side
+  }
 }
 
-const day = ()=>{
-const [dayOfMonth, setDayOfMonth] = useState('')
-useEffect(() => {
-async function retrieveUserSession() {
-
-    try {
-        const session = await EncryptedStorage.getItem("user_session");
+const day = () => {
+  const [dayOfMonth, setDayOfMonth] = useState('');
+  useEffect(() => {
+    async function retrieveUserSession() {
+      try {
+        const session = await EncryptedStorage.getItem('user_session');
 
         if (session !== undefined) {
-            // Congrats! You've just retrieved your first value!
-         setDayOfMonth(JSON.parse(session).age);
+          // Congrats! You've just retrieved your first value!
+          setDayOfMonth(JSON.parse(session).age);
         }
-    } catch (error) {
+      } catch (error) {
         // There was an error on the native side
+      }
     }
-}
-retrieveUserSession()},[dayOfMonth])
+    retrieveUserSession();
+  }, [dayOfMonth]);
 
-return dayOfMonth;
-}
+  return dayOfMonth;
+};
 
 export default function HomeScreen({navigation}) {
   const showMessage = () => Alert.alert('Button clicked !');
-
-  const value = day();
+  const [searchQuery, setSearchQuery] = React.useState('');
+  const onChangeSearch = query => setSearchQuery(query);
+  const value = fetchApiCall(searchQuery);
 
   return (
     <View>
-      <Button title="Search" onPress={() => navigation.navigate('Search')} />
+      <Searchbar
+        placeholder="Enter the name of the city"
+        onChangeText={onChangeSearch}
+        value={searchQuery}
+      />
+      <Button title="History" onPress={showMessage} />
       <View style={styles.container}>
-        <CircleButton text={value} size={150} fontSize={28} onPress={showMessage} />
+        <CircleButton text={value.temp_c} buttonHeading={value.conditiontext} />
       </View>
-  <Text style={{fontSize: 20,textAlign: 'center'}}>New Delhi, India</Text>
-      <CircleButton text="History" size={50} fontSize={10} onPress={showMessage} />
-
-      <Text style={{fontSize: 15, textAlign: 'center'}}>
-        Thursday, 3rd February 2022
+      <Text
+        style={{
+          fontSize: 20,
+          textAlign: 'center',
+          fontWeight: '800',
+          fontSize: 30,
+        }}>
+        {value.name}
       </Text>
+      <Text
+        style={{
+          fontSize: 15,
+          textAlign: 'center',
+          fontWeight: '400',
+          fontSize: 20,
+        }}>
+        {value.localtime}
+      </Text>
+
       <ScrollView horizontal={true}>
-        <SmallCard text="09:00AM" onPress={fetchApiCall} />
-        <SmallCard text="10:00AM" onPress={showMessage} />
-        <SmallCard text="11:00AM" onPress={showMessage} />
-        <SmallCard text="12:00AM" onPress={showMessage} />
-        <SmallCard text="01:00AM" onPress={showMessage} />
-        <SmallCard text="02:00AM" onPress={showMessage} />
-        <SmallCard text="03:00AM" onPress={showMessage} />
-      </ScrollView>
-      <ScrollView horizontal={true}>
-        <LargeCard text="09:00AM" onPress={showMessage} />
-        <LargeCard text="10:00AM" onPress={showMessage} />
-        <LargeCard text="11:00AM" onPress={showMessage} />
-        <LargeCard text="12:00AM" onPress={showMessage} />
-        <LargeCard text="01:00AM" onPress={showMessage} />
-        <LargeCard text="02:00AM" onPress={showMessage} />
-        <LargeCard text="03:00AM" onPress={showMessage} />
+        <SmallCard text={value.wind_mph} cardHeading="Wind (mph)" />
+        <SmallCard text={value.wind_kph} cardHeading="Wind (kph)" />
+        <SmallCard text={value.pressure_mb} cardHeading="Pressure (mb)" />
+        <SmallCard text={value.pressure_in} cardHeading="Pressure (in)" />
+        <SmallCard text={value.precip_mm} cardHeading="Precipitation (mm)" />
+        <SmallCard text={value.precip_in} cardHeading="Precipitation (in)" />
+        <SmallCard text={value.humidity} cardHeading="Humidity" />
       </ScrollView>
     </View>
   );

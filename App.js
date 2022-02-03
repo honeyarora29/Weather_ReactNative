@@ -6,9 +6,11 @@
  * @flow strict-local
  */
 
+
 import React,{useEffect,useState} from 'react';
 import type {Node} from 'react';
 import EncryptedStorage from 'react-native-encrypted-storage';
+
 
 
 import {
@@ -30,6 +32,7 @@ import {
 } from 'react-native/Libraries/NewAppScreen';
 
 import config from './config';
+
 
 
 async function storeUserSession() {
@@ -70,6 +73,7 @@ retrieveUserSession()},[])
 return players;
 }
 
+
 const Section = ({children, title}): Node => {
   const isDarkMode = useColorScheme() === 'dark';
   return (
@@ -102,13 +106,9 @@ const App: () => Node = () => {
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
+
 //storeUserSession();
 const value = age();
-
-
-
-
-
 
   return (
     <SafeAreaView style={backgroundStyle}>
@@ -125,7 +125,9 @@ const value = age();
             Edit <Text style={styles.highlight}>App.js</Text> to change this
             screen and then hello back to see your edits.
           </Section>
+
           <Section title={value}>
+
             <ReloadInstructions />
           </Section>
           <Section title="Debug">

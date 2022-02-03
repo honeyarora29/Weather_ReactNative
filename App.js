@@ -66,6 +66,7 @@ async function retrieveUserSession() {
     }
 }
 retrieveUserSession()},[])
+
 return players;
 }
 

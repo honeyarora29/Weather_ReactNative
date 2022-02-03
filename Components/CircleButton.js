@@ -13,7 +13,7 @@ const CircleButton = props => (
       borderRadius: props.size * 2,
     }}
     onPress={props.onPress}>
-    <Text style={{color: 'white', fontSize: 28}}>{props.text}</Text>
+    <Text style={{color: 'white', fontSize: props.fontSize}}>{props.text}</Text>
   </TouchableOpacity>
 );
 

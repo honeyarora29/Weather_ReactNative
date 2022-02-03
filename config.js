@@ -1,6 +1,6 @@
-  import { API_URL, ANALYTICS_KEY } from '@env';
+  import { API_URL, API_KEY } from '@env';
 
   export default {
     API_URL,
-    ANALYTICS_KEY,
+    API_KEY,
   };

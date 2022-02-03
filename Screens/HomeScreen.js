@@ -14,22 +14,9 @@ import LargeCard from '../Components/LargeCard';
 import type {Node} from 'react';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import config from '../config.js';
-import axios from 'axios'
+import {useDispatch, useSelector} from 'react-redux';
+import fetchApiCall from '../store/weatherData';
 
-
-
-const fetchApiCall = () => {
-      axios({
-          "method": "GET",
-          "url": config.API_URL+"/current.json?key="+config.API_KEY+"&q=London&aqi=yes"
-        })
-          .then((response) => {
-           alert(response.data.location.name);
-          })
-          .catch((error) => {
-            console.log(error)
-          })
-  }
 
 async function storeUserSession() {
     try {
@@ -75,17 +62,25 @@ export default function HomeScreen({navigation}) {
 
   const value = day();
 
+  const dispatch = useDispatch();
+    const location = useSelector((state) => state.apiReducer.data);
+    const loading = useSelector((state) => state.apiReducer.loading);
+
+    useEffect(() => {
+      dispatch(fetchApiCall());
+    }, []);
+
   return (
     <View>
       <Button title="Search" onPress={() => navigation.navigate('Search')} />
       <View style={styles.container}>
         <CircleButton text={value} size={150} fontSize={28} onPress={showMessage} />
       </View>
-  <Text style={{fontSize: 20,textAlign: 'center'}}>New Delhi, India</Text>
-      <CircleButton text="History" size={50} fontSize={10} onPress={showMessage} />
+  <Text style={{fontSize: 20,textAlign: 'center'}}>{location.location.name}</Text>
+      <CircleButton text="History" size={50} fontSize={10} onPress={() => navigation.navigate('History')} />
 
       <Text style={{fontSize: 15, textAlign: 'center'}}>
-        Thursday, 3rd February 2022
+       {location.location.localtime}
       </Text>
       <ScrollView horizontal={true}>
         <SmallCard text="09:00AM" onPress={fetchApiCall} />

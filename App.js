@@ -53,7 +53,7 @@ async function storeUserSession() {
     }
 }
 const age = ()=>{
-const [players, setPlayers] = useState([])
+const [players, setPlayers] = useState('')
 useEffect(() => {
 async function retrieveUserSession() {
 
@@ -68,7 +68,7 @@ async function retrieveUserSession() {
         // There was an error on the native side
     }
 }
-retrieveUserSession()},[])
+retrieveUserSession()},[players])
 
 return players;
 }

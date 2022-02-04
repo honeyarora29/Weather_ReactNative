@@ -23,10 +23,10 @@ export default function HomeScreen({navigation}) {
   const dispatch = useDispatch();
     const location = useSelector((state) => state.apiReducer.data);
     const loading = useSelector((state) => state.apiReducer.loading);
-
-    useEffect(() => {
+useEffect(() => {
       dispatch(fetchApiCall());
     }, []);
+
 
   return (
     <View>

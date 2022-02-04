@@ -1,7 +1,8 @@
 import React,{useEffect,useState} from 'react';
-import {View, Text} from 'react-native';
+import {View, Text,ScrollView} from 'react-native';
 import {Searchbar} from 'react-native-paper';
 import EncryptedStorage from 'react-native-encrypted-storage';
+import SmallCard from '../Components/SmallCard';
 
 
 async function storeUserSession() {
@@ -37,7 +38,7 @@ async function retrieveUserSession() {
         if (session !== undefined) {
             // Congrats! You've just retrieved your first value!
            // console.log(session)
-         setDayOfMonth(JSON.parse(session).temp_c);
+         setDayOfMonth(JSON.parse(session));
         }
     } catch (error) {
         // There was an error on the native side
@@ -53,9 +54,11 @@ storeUserSession();
 const { cityName } = route.params;
 const value = day(cityName);
   return (
+  <View>
    <Text style={{fontSize: 15, textAlign: 'center'}}>
-{value}
+  {value.temp_f}
    </Text>
+      </View>
   );
 }
 

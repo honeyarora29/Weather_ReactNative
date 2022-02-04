@@ -12,91 +12,21 @@ import {
 import CircleButton from '../Components/CircleButton';
 import SmallCard from '../Components/SmallCard';
 import type {Node} from 'react';
-import EncryptedStorage from 'react-native-encrypted-storage';
-import config from '../config.js';
-import axios from 'axios';
-import {Icon} from 'react-native-elements/dist/icons/Icon';
-import {Searchbar} from 'react-native-paper';
+import {useDispatch, useSelector} from 'react-redux';
+import fetchApiCall from '../store/weatherData';
 
-const fetchApiCall = searchQuery => {
-  const [weather, setWeather] = useState('');
-  axios({
-    method: 'GET',
-    url:
-      config.API_URL +
-      '/current.json?key=' +
-      config.API_KEY +
-      '&q=' +
-      searchQuery +
-      '&aqi=yes',
-  })
-    .then(response => {
-      const details = {
-        conditiontext: response.data.current.condition.text,
-        name: response.data.location.name,
-        temp_c: response.data.current.temp_c,
-        localtime: response.data.location.localtime,
-        temp_f: response.data.current.temp_f,
-        wind_mph: response.data.current.wind_mph,
-        wind_kph: response.data.current.wind_kph,
-        pressure_mb: response.data.current.pressure_mb,
-        pressure_in: response.data.current.pressure_in,
-        precip_mm: response.data.current.precip_mm,
-        precip_in: response.data.current.precip_in,
-        humidity: response.data.current.humidity,
-      };
-      setWeather(details);
-    })
-    .catch(error => {
-      console.log(error);
-    });
-  return weather;
-};
-
-async function storeUserSession() {
-  try {
-    await EncryptedStorage.setItem(
-      'user_session',
-      JSON.stringify({
-        age: 29,
-        token: 'ACCESS_TOKEN',
-        username: 'emeraldsanto',
-        languages: ['fr', 'en', 'de'],
-      }),
-    );
-
-    // Congrats! You've just stored your first value!
-  } catch (error) {
-    // There was an error on the native side
-  }
-}
-
-const day = () => {
-  const [dayOfMonth, setDayOfMonth] = useState('');
-  useEffect(() => {
-    async function retrieveUserSession() {
-      try {
-        const session = await EncryptedStorage.getItem('user_session');
-
-        if (session !== undefined) {
-          // Congrats! You've just retrieved your first value!
-          setDayOfMonth(JSON.parse(session).age);
-        }
-      } catch (error) {
-        // There was an error on the native side
-      }
-    }
-    retrieveUserSession();
-  }, [dayOfMonth]);
-
-  return dayOfMonth;
-};
 
 export default function HomeScreen({navigation}) {
   const showMessage = () => Alert.alert('Button clicked !');
-  const [searchQuery, setSearchQuery] = React.useState('');
-  const onChangeSearch = query => setSearchQuery(query);
-  const value = fetchApiCall(searchQuery);
+
+  const dispatch = useDispatch();
+    const value = useSelector((state) => state.apiReducer.data);
+    const loading = useSelector((state) => state.apiReducer.loading);
+useEffect(() => {
+      dispatch(fetchApiCall());
+    }, []);
+
+
 
   return (
     <View>
@@ -107,8 +37,9 @@ export default function HomeScreen({navigation}) {
       />
       <Button title="History" onPress={showMessage} />
       <View style={styles.container}>
-        <CircleButton text={value.temp_c} buttonHeading={value.conditiontext} />
+        <CircleButton text={value.current.temp_c} buttonHeading={value.current.conditiontext} />
       </View>
+ <Button title="History" onPress={() => {navigation.navigate('History',{cityName: value.location.name})} }/>
       <Text
         style={{
           fontSize: 20,
@@ -116,7 +47,7 @@ export default function HomeScreen({navigation}) {
           fontWeight: '800',
           fontSize: 30,
         }}>
-        {value.name}
+        {value.location.name}
       </Text>
       <Text
         style={{
@@ -125,17 +56,17 @@ export default function HomeScreen({navigation}) {
           fontWeight: '400',
           fontSize: 20,
         }}>
-        {value.localtime}
+        {value.location.localtime}
       </Text>
 
       <ScrollView horizontal={true}>
-        <SmallCard text={value.wind_mph} cardHeading="Wind (mph)" />
-        <SmallCard text={value.wind_kph} cardHeading="Wind (kph)" />
-        <SmallCard text={value.pressure_mb} cardHeading="Pressure (mb)" />
-        <SmallCard text={value.pressure_in} cardHeading="Pressure (in)" />
-        <SmallCard text={value.precip_mm} cardHeading="Precipitation (mm)" />
-        <SmallCard text={value.precip_in} cardHeading="Precipitation (in)" />
-        <SmallCard text={value.humidity} cardHeading="Humidity" />
+        <SmallCard text={value.current.wind_mph} cardHeading="Wind (mph)" />
+        <SmallCard text={value.current.wind_kph} cardHeading="Wind (kph)" />
+        <SmallCard text={value.current.pressure_mb} cardHeading="Pressure (mb)" />
+        <SmallCard text={value.current.pressure_in} cardHeading="Pressure (in)" />
+        <SmallCard text={value.current.precip_mm} cardHeading="Precipitation (mm)" />
+        <SmallCard text={value.current.precip_in} cardHeading="Precipitation (in)" />
+        <SmallCard text={value.current.humidity} cardHeading="Humidity" />
       </ScrollView>
     </View>
   );

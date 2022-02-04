@@ -12,72 +12,30 @@ import CircleButton from '../Components/CircleButton';
 import SmallCard from '../Components/SmallCard';
 import LargeCard from '../Components/LargeCard';
 import type {Node} from 'react';
-import EncryptedStorage from 'react-native-encrypted-storage';
 import config from '../config.js';
 import {useDispatch, useSelector} from 'react-redux';
 import fetchApiCall from '../store/weatherData';
 
 
-async function storeUserSession() {
-    try {
-        await EncryptedStorage.setItem(
-            "user_session",
-            JSON.stringify({
-                age : 29,
-                token : "ACCESS_TOKEN",
-                username : "emeraldsanto",
-                languages : ["fr", "en", "de"]
-            })
-        );
-
-        // Congrats! You've just stored your first value!
-    } catch (error) {
-        // There was an error on the native side
-    }
-}
-
-const day = ()=>{
-const [dayOfMonth, setDayOfMonth] = useState('')
-useEffect(() => {
-async function retrieveUserSession() {
-
-    try {
-        const session = await EncryptedStorage.getItem("user_session");
-
-        if (session !== undefined) {
-            // Congrats! You've just retrieved your first value!
-         setDayOfMonth(JSON.parse(session).age);
-        }
-    } catch (error) {
-        // There was an error on the native side
-    }
-}
-retrieveUserSession()},[dayOfMonth])
-
-return dayOfMonth;
-}
-
 export default function HomeScreen({navigation}) {
   const showMessage = () => Alert.alert('Button clicked !');
-
-  const value = day();
 
   const dispatch = useDispatch();
     const location = useSelector((state) => state.apiReducer.data);
     const loading = useSelector((state) => state.apiReducer.loading);
-
-    useEffect(() => {
+useEffect(() => {
       dispatch(fetchApiCall());
     }, []);
+
 
   return (
     <View>
       <Button title="Search" onPress={() => navigation.navigate('Search')} />
       <View style={styles.container}>
-        <CircleButton text={value} size={150} fontSize={28} onPress={showMessage} />
+        <CircleButton text={location.current.temp_c} size={150} fontSize={28} onPress={showMessage} />
       </View>
   <Text style={{fontSize: 20,textAlign: 'center'}}>{location.location.name}</Text>
-      <CircleButton text="History" size={50} fontSize={10} onPress={() => navigation.navigate('History')} />
+      <Button title="History" onPress={() => {navigation.navigate('History',{cityName: location.location.name})} }/>
 
       <Text style={{fontSize: 15, textAlign: 'center'}}>
        {location.location.localtime}

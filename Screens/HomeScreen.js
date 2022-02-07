@@ -1,4 +1,4 @@
-import React,{useEffect,useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   StyleSheet,
   Text,
@@ -7,56 +7,68 @@ import {
   Alert,
   ScrollView,
   Button,
+  Image,
 } from 'react-native';
 import CircleButton from '../Components/CircleButton';
 import SmallCard from '../Components/SmallCard';
-import LargeCard from '../Components/LargeCard';
 import type {Node} from 'react';
-import config from '../config.js';
+import {Icon} from 'react-native-elements/dist/icons/Icon';
+import {Searchbar} from 'react-native-paper';
 import {useDispatch, useSelector} from 'react-redux';
 import fetchApiCall from '../store/weatherData';
+import {connect} from 'react-redux'
 
 
 export default function HomeScreen({navigation}) {
   const showMessage = () => Alert.alert('Button clicked !');
-
+ const [searchQuery, setSearchQuery] = React.useState('London');
+  const onChangeSearch = query => setSearchQuery(query);
   const dispatch = useDispatch();
-    const location = useSelector((state) => state.apiReducer.data);
-    const loading = useSelector((state) => state.apiReducer.loading);
-useEffect(() => {
-      dispatch(fetchApiCall());
-    }, []);
+  const value = useSelector((state) => state.apiReducer.data);
+  useEffect(() => {
+    dispatch(fetchApiCall(searchQuery));
+  }, [searchQuery]);
 
 
   return (
     <View>
-      <Button title="Search" onPress={() => navigation.navigate('Search')} />
+      <Searchbar
+        placeholder="Enter the name of the city"
+        onChangeText={onChangeSearch}
+        value={searchQuery}
+      />
+      <Button title="History" onPress={showMessage} />
       <View style={styles.container}>
-        <CircleButton text={location.current.temp_c} size={150} fontSize={28} onPress={showMessage} />
+        <CircleButton text={value.current.temp_c} buttonHeading={value.current.conditiontext} />
       </View>
-  <Text style={{fontSize: 20,textAlign: 'center'}}>{location.location.name}</Text>
-      <Button title="History" onPress={() => {navigation.navigate('History',{cityName: location.location.name})} }/>
-
-      <Text style={{fontSize: 15, textAlign: 'center'}}>
-       {location.location.localtime}
+ <Button title="History" onPress={() => {navigation.navigate('History',{cityName: value.location.name})} }/>
+      <Text
+        style={{
+          fontSize: 20,
+          textAlign: 'center',
+          fontWeight: '800',
+          fontSize: 30,
+        }}>
+        {value.location.name}
       </Text>
+      <Text
+        style={{
+          fontSize: 15,
+          textAlign: 'center',
+          fontWeight: '400',
+          fontSize: 20,
+        }}>
+        {value.location.localtime}
+      </Text>
+
       <ScrollView horizontal={true}>
-        <SmallCard text="09:00AM" onPress={fetchApiCall} />
-        <SmallCard text="10:00AM" onPress={showMessage} />
-        <SmallCard text="11:00AM" onPress={showMessage} />
-        <SmallCard text="12:00AM" onPress={showMessage} />
-        <SmallCard text="01:00AM" onPress={showMessage} />
-        <SmallCard text="02:00AM" onPress={showMessage} />
-        <SmallCard text="03:00AM" onPress={showMessage} />
-      </ScrollView>
-      <ScrollView horizontal={true}>
-        <LargeCard text="09:00AM" onPress={showMessage} />
-        <LargeCard text="10:00AM" onPress={showMessage} />
-        <LargeCard text="11:00AM" onPress={showMessage} />
-        <LargeCard text="12:00AM" onPress={showMessage} />
-        <LargeCard text="01:00AM" onPress={showMessage} />
-        <LargeCard text="02:00AM" onPress={showMessage} />
-        <LargeCard text="03:00AM" onPress={showMessage} />
+        <SmallCard text={value.current.wind_mph} cardHeading="Wind (mph)" />
+        <SmallCard text={value.current.wind_kph} cardHeading="Wind (kph)" />
+        <SmallCard text={value.current.pressure_mb} cardHeading="Pressure (mb)" />
+        <SmallCard text={value.current.pressure_in} cardHeading="Pressure (in)" />
+        <SmallCard text={value.current.precip_mm} cardHeading="Precipitation (mm)" />
+        <SmallCard text={value.current.precip_in} cardHeading="Precipitation (in)" />
+        <SmallCard text={value.current.humidity} cardHeading="Humidity" />
       </ScrollView>
     </View>
   );

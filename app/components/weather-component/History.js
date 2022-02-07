@@ -2,7 +2,6 @@ import React,{useEffect,useState} from 'react';
 import {View, Text,ScrollView} from 'react-native';
 import {Searchbar} from 'react-native-paper';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import SmallCard from '../Components/SmallCard';
 
 
 async function storeUserSession() {
